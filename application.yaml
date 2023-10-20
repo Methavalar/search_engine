@@ -1,0 +1,22 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    username: root
+    password: S07032329m$
+    url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+      generate-ddl: true
+    show-sql: true
+
+indexing-settings:
+  sites:
+    - url: https://testpages.herokuapp.com/
+      name: TestPages.Com
+    - url: https://candymapper.com/
+      name: CandyMapper.Com
