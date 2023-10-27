@@ -95,7 +95,7 @@ public class Lemmatisator {
             info = morphologyEng.getMorphInfo(word);
         }
         for (String elem : info){
-            if (elem.contains("ПРЕДЛ") || elem.contains("МЕЖД") || elem.contains("СОЮЗ") || elem.contains("ЧАСТ")){
+            if (elem.contains("ПРЕДЛ") || elem.contains("МЕЖД") || elem.contains("СОЮЗ") || elem.contains("ЧАСТ") || elem.contains("CONJ") || elem.contains("PREP") || elem.contains("PART") || elem.contains("INT") || elem.contains("ARTICLE")){
                 return true;
             }
         }

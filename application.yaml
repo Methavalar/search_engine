@@ -20,3 +20,5 @@ indexing-settings:
       name: TestPages.Com
     - url: https://candymapper.com/
       name: CandyMapper.Com
+    - url: https://likons.ru/
+      name: Likons.Ru

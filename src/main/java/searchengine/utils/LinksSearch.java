@@ -38,7 +38,7 @@ public class LinksSearch extends RecursiveTask<List<PageData>> {
         this.siteRepository = siteRepository;
     }
 
-    public Document getConnectWithUserAgent(String url){
+    private Document getConnectWithUserAgent(String url){
         Document document = null;
         try{
             Thread.sleep(100);
@@ -48,7 +48,7 @@ public class LinksSearch extends RecursiveTask<List<PageData>> {
         }
         return document;
     }
-    public Document getConnect(String url){
+    private Document getConnect(String url){
         Document document = null;
         try{
             document = Jsoup.connect(url).get();
