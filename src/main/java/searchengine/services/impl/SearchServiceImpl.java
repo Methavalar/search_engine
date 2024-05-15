@@ -35,20 +35,13 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchData> searchAcrossAllSites(String text, int offset, int limit) {
         log.info("Поиск по всем сайтам");
         List<Website> siteList = siteRepository.findAll();
-        List<SearchData> searchDataList = new ArrayList<>();
         List<Lemma> lemmaList = new ArrayList<>();
         List<String> lemmasFromText = getLemmaFromSearch(text);
         for (Website site : siteList){
             lemmaList.addAll(getLemmasFromSite(lemmasFromText, site));
         }
-        for (Lemma lem : lemmaList){
-            if (lem.getLemma().equals(text)){
-                searchDataList = new ArrayList<>(getSearchDataToList(lemmaList, lemmasFromText, offset, limit));
-                searchDataList.sort((a1, a2) -> Float.compare(a2.getRelevance(), a1.getRelevance()));
-            }
-        }
         log.info("Поиск выполнен");
-        return searchDataList;
+        return getSearchDataToList(lemmaList, lemmasFromText, offset, limit);
     }
 
     @Override
@@ -62,7 +55,10 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private List<String> getLemmaFromSearch(String text){
-        String[] words = text.toLowerCase(Locale.ROOT).replaceAll("[^а-яa-z\\s]", " ").trim().split("\\s+");
+        String[] words = text.toLowerCase(Locale.ROOT)
+                .replaceAll("[^а-яa-z\\s]", " ")
+                .trim()
+                .split("\\s+");
         List<String> lemmaList = new ArrayList<>();
         for (String word : words){
             List<String> lemmas = lemmatisator.getLemma(word);
@@ -78,7 +74,8 @@ public class SearchServiceImpl implements SearchService {
         return lemmaList;
     }
 
-    private List<SearchData> getSearchDataToList(List<Lemma> lemmaList, List<String> lemmasFromText, int offset, int limit){
+    private List<SearchData> getSearchDataToList(List<Lemma> lemmaList, List<String> lemmasFromText,
+                                                 int offset, int limit) {
         List<SearchData> searchDataList = new ArrayList<>();
         pageRepository.flush();
         if (lemmaList.size() >= lemmasFromText.size()){

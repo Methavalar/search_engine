@@ -7,9 +7,7 @@ import searchengine.model.StatusType;
 import org.springframework.stereotype.Service;
 import searchengine.config.Site;
 import searchengine.config.SitesList;
-import searchengine.utils.GetLemmas;
-import searchengine.utils.LemmasIndexing;
-import searchengine.utils.SiteIndexing;
+import searchengine.utils.*;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
@@ -33,12 +31,14 @@ public class IndexingServiceImpl implements IndexingService {
     private ExecutorService executorService;
     private final GetLemmas getLemmas;
     private final LemmasIndexing lemmasIndexing;
+    private final Lemmatisator lemmatisator;
     public static boolean isInterapted = false;
 
     @Override
     public boolean indexingAll(){
         if (isIndexingProcessing()){
             log.debug("Индексация уже запущена");
+            return false;
         } else{
             executorService = Executors.newFixedThreadPool(coreCount);
             List<Site> siteList = sitesList.getSites();
@@ -47,7 +47,8 @@ public class IndexingServiceImpl implements IndexingService {
                 Website website = new Website();
                 website.setName(site.getName());
                 log.info("Индексация сайта: " + site.getName());
-                executorService.submit(new SiteIndexing(siteRepository, pageRepository, lemmaRepository, indexRepository, sitesList, url, getLemmas, lemmasIndexing));
+                executorService.submit(new SiteIndexing(siteRepository, pageRepository, lemmaRepository,
+                        indexRepository, sitesList, url, getLemmas, lemmasIndexing));
             }
             executorService.shutdown();
         }
@@ -67,10 +68,12 @@ public class IndexingServiceImpl implements IndexingService {
     }
     @Override
     public boolean urlIndexing(String url){
-        if (isUrlInData(url)){
-            log.info("Индексация сайта: " + url);
+        Site site = isUrlInData(url);
+        if (site != null){
+            log.info("Индексация страницы: " + url);
             executorService = Executors.newFixedThreadPool(coreCount);
-            executorService.submit(new SiteIndexing(siteRepository, pageRepository, lemmaRepository, indexRepository, sitesList, url, getLemmas, lemmasIndexing));
+            executorService.submit(new PageIndexing(siteRepository, pageRepository, lemmaRepository,
+                    indexRepository, url, site, lemmatisator));
             executorService.shutdown();
             return true;
         } else {
@@ -78,14 +81,14 @@ public class IndexingServiceImpl implements IndexingService {
         }
     }
 
-    private boolean isUrlInData(String url){
+    private Site isUrlInData(String url){
         List<Site> siteList = sitesList.getSites();
         for (Site site : siteList){
-            if (site.getUrl().equals(url)){
-                return true;
+            if (url.contains(site.getUrl())){
+                return site;
             }
         }
-        return false;
+        return null;
     }
 
     private boolean isIndexingProcessing(){

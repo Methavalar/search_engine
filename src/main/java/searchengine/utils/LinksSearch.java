@@ -29,7 +29,8 @@ public class LinksSearch extends RecursiveTask<List<PageData>> {
     private final List<PageData> pageDataList;
     private final SiteRepository siteRepository;
 
-    public LinksSearch(String mainLink, String mainLinkV2, String link, List<String> linkList, List<PageData> pageDataList, SiteRepository siteRepository){
+    public LinksSearch(String mainLink, String mainLinkV2, String link, List<String> linkList,
+                       List<PageData> pageDataList, SiteRepository siteRepository){
         this.mainLink = mainLink;
         this.mainLinkV2 = mainLinkV2;
         this.link = link;
@@ -38,7 +39,7 @@ public class LinksSearch extends RecursiveTask<List<PageData>> {
         this.siteRepository = siteRepository;
     }
 
-    public Document getConnectWithUserAgent(String url){
+    private Document getConnectWithUserAgent(String url){
         Document document = null;
         try{
             Thread.sleep(100);
@@ -48,7 +49,7 @@ public class LinksSearch extends RecursiveTask<List<PageData>> {
         }
         return document;
     }
-    public Document getConnect(String url){
+    private Document getConnect(String url){
         Document document = null;
         try{
             document = Jsoup.connect(url).get();
@@ -82,9 +83,12 @@ public class LinksSearch extends RecursiveTask<List<PageData>> {
                 List<LinksSearch> taskList = new ArrayList<>();
                 for (Element element : elements) {
                     String elem = element.attr("abs:href");
-                    if ((elem.startsWith(mainLink) || elem.startsWith(mainLinkV2)) && !elem.contains("#") && !elem.contains(".jpg") && !elem.contains(".png") && !elem.contains(".pdf") && !linkList.contains(elem)) {
+                    if ((elem.startsWith(mainLink) || elem.startsWith(mainLinkV2)) && !elem.contains("#")
+                            && !elem.contains(".jpg") && !elem.contains(".png") && !elem.contains(".pdf")
+                            && !linkList.contains(elem)) {
                         linkList.add(elem);
-                        LinksSearch task = new LinksSearch(mainLink, mainLinkV2, elem, linkList, pageDataList, siteRepository);
+                        LinksSearch task = new LinksSearch(mainLink, mainLinkV2, elem,
+                                linkList, pageDataList, siteRepository);
                         task.fork();
                         taskList.add(task);
                     }

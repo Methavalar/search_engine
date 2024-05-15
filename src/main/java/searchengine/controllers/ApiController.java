@@ -43,7 +43,8 @@ public class ApiController {
         if (indexingService.indexingAll()){
             return new ResponseEntity<>(new Response(true), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new ErrorResponse(false, "Индексация уже запущена"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(false, "Индексация уже запущена"),
+                    HttpStatus.BAD_REQUEST);
         }
     }
     @GetMapping("/stopIndexing")
@@ -51,26 +52,32 @@ public class ApiController {
         if (indexingService.stopIndexing()){
             return new ResponseEntity<>(new Response(true), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new ErrorResponse(false, "Индексация не запущена"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(false, "Индексация не запущена"),
+                    HttpStatus.BAD_REQUEST);
         }
     }
     @PostMapping("/indexPage")
     public ResponseEntity<Object> indexPage(@RequestParam(name = "url") String url){
         if (url.isEmpty()){
-            return new ResponseEntity<>(new ErrorResponse(false, "Страница не указана"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(false, "Страница не указана"),
+                    HttpStatus.BAD_REQUEST);
         }
         if (indexingService.urlIndexing(url)){
             return new ResponseEntity<>(new Response(true), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new ErrorResponse(
-                    false, "Данная страница находится за пределами сайтов, указанных в конфигурацинном файле"),
+                    false,
+                    "Данная страница находится за пределами сайтов, указанных в конфигурацинном файле"),
             HttpStatus.BAD_REQUEST);
         }
     }
     @GetMapping("/search")
-    public ResponseEntity<Object> search(@RequestParam(name = "query", required = false, defaultValue = "") String request,
-                                         @RequestParam(name = "site", required = false, defaultValue = "") String site,
-                                         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset){
+    public ResponseEntity<Object> search(@RequestParam(name = "query", required = false, defaultValue = "")
+                                                     String request,
+                                         @RequestParam(name = "site", required = false, defaultValue = "")
+                                                     String site,
+                                         @RequestParam(name = "offset", required = false, defaultValue = "0")
+                                                     int offset){
         if (request.isEmpty()){
             return new ResponseEntity<>(new ErrorResponse(false, "Пустой запрос"), HttpStatus.BAD_REQUEST);
         } else {
@@ -81,7 +88,8 @@ public class ApiController {
                     searchData = searchService.searchAcrossSite(request, site, offset, 20);
                     count = searchService.getCount();
                 } else {
-                    return new ResponseEntity<>(new ErrorResponse(false, "Требуемая страница не найдена"), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ErrorResponse(false, "Требуемая страница не найдена"),
+                            HttpStatus.BAD_REQUEST);
                 }
             } else {
                 searchData = searchService.searchAcrossAllSites(request, offset, 20);

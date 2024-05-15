@@ -42,7 +42,7 @@ public class SiteIndexing implements Runnable{
         saveDataSite();
         try {
             List<PageData> pageData = getPages();
-            saveToBase(pageData);
+            savePagesToBase(pageData);
             getLemmasFromPages();
             indexingLemmas();
             log.info("Индексация завершена");
@@ -58,7 +58,8 @@ public class SiteIndexing implements Runnable{
             List<PageData> pageDataList = new ArrayList<>();
             ForkJoinPool forkJoinPool = new ForkJoinPool(coreCount);
             String urlV2 = getUrlV2(url);
-            List<PageData> pages = forkJoinPool.invoke(new LinksSearch(url, urlV2, url, urlList, pageDataList, siteRepository));
+            List<PageData> pages = forkJoinPool.invoke(new LinksSearch(url, urlV2, url, urlList,
+                    pageDataList, siteRepository));
             return new CopyOnWriteArrayList<>(pages);
         }else {
             throw new InterruptedException();
@@ -106,7 +107,7 @@ public class SiteIndexing implements Runnable{
             throw new InterruptedException();
         }
     }
-    private void saveToBase(List<PageData> pages) throws InterruptedException{
+    private void savePagesToBase(List<PageData> pages) throws InterruptedException{
         if (!Thread.interrupted() && !IndexingServiceImpl.isInterapted){
             List<Page> pageList = new CopyOnWriteArrayList<>();
             Website website = siteRepository.findByUrl(url);

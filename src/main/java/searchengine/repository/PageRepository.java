@@ -14,7 +14,9 @@ import java.util.List;
 public interface PageRepository extends JpaRepository<Page, Integer> {
     Iterable<Page> findBySiteId(Website website);
     long countBySiteId(Website website);
+    Page findByPath(String path);
 
-    @Query(value = "SELECT p.* FROM page p JOIN indexs i ON p.id = i.page_id WHERE i.lemma_id IN :lemmas", nativeQuery = true)
+    @Query(value = "SELECT p.* FROM page p JOIN indexs i ON p.id = i.page_id WHERE i.lemma_id IN :lemmas",
+            nativeQuery = true)
     List<Page> findByLemmas(@Param("lemmas")List<Lemma> lemmaList);
 }

@@ -30,32 +30,38 @@ public class LemmasIndexing {
 
     public void start(Website website) throws InterruptedException {
         if (!Thread.interrupted() && !IndexingServiceImpl.isInterapted) {
-            float rank;
             Iterable<Page> pages = pageRepository.findBySiteId(website);
             List<Lemma> lemmaList = lemmaRepository.findBySiteId(website);
             indexDataList = new CopyOnWriteArrayList<>();
-            for (Page page : pages) {
-                var firstLetter = String.valueOf(page.getCode()).charAt(0);
-                if (firstLetter == '4' || firstLetter == '5') {
-                    continue;
-                }
-                int pageId = page.getId();
-                String content = page.getContent();
-                String text = lemmatisator.cleanFromHtmlTags(content);
-                HashMap<String, Integer> wordsList = lemmatisator.getLemmaList(text);
-                for (Lemma lemma : lemmaList) {
-                    int lemmaId = lemma.getId();
-                    String lemmaInData = lemma.getLemma();
-                    if (wordsList.containsKey(lemmaInData)) {
-                        rank = Float.valueOf(wordsList.get(lemmaInData));
-                        indexDataList.add(new IndexData(pageId, lemmaId, rank));
-                    } else {
-                        log.debug("Лемма не найдена");
-                    }
-                }
-            }
+            pageLemmas(pages, lemmaList);
         } else {
             throw new InterruptedException();
+        }
+    }
+    private void pageLemmas(Iterable<Page> pages, List<Lemma> lemmaList){
+        for (Page page : pages) {
+            var firstLetter = String.valueOf(page.getCode()).charAt(0);
+            if (firstLetter == '4' || firstLetter == '5') {
+                continue;
+            }
+            int pageId = page.getId();
+            String content = page.getContent();
+            String text = lemmatisator.cleanFromHtmlTags(content);
+            HashMap<String, Integer> wordsList = lemmatisator.getLemmaList(text);
+            setIndex(lemmaList, wordsList, pageId);
+        }
+    }
+    private void setIndex(List<Lemma> lemmaList, HashMap<String, Integer> wordsList, int pageId){
+        float rank;
+        for (Lemma lemma : lemmaList) {
+            int lemmaId = lemma.getId();
+            String lemmaInData = lemma.getLemma();
+            if (wordsList.containsKey(lemmaInData)) {
+                rank = Float.valueOf(wordsList.get(lemmaInData));
+                indexDataList.add(new IndexData(pageId, lemmaId, rank));
+            } else {
+                log.debug("Лемма не найдена");
+            }
         }
     }
 }

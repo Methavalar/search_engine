@@ -46,7 +46,10 @@ public class Lemmatisator {
 
     public HashMap<String, Integer> getLemmaList(String text){
         int count;
-        String[] words = text.toLowerCase(Locale.ROOT).replaceAll("[^а-яa-z\\s]", " ").trim().split("\\s+");
+        String[] words = text.toLowerCase(Locale.ROOT)
+                .replaceAll("[^а-яa-z\\s]", " ")
+                .trim()
+                .split("\\s+");
         HashMap<String, Integer> result = new HashMap<>();
         for (String word : words){
             if (word.isEmpty()){
@@ -95,7 +98,9 @@ public class Lemmatisator {
             info = morphologyEng.getMorphInfo(word);
         }
         for (String elem : info){
-            if (elem.contains("ПРЕДЛ") || elem.contains("МЕЖД") || elem.contains("СОЮЗ") || elem.contains("ЧАСТ")){
+            if (elem.contains("ПРЕДЛ") || elem.contains("МЕЖД") || elem.contains("СОЮЗ")
+                    || elem.contains("ЧАСТ") || elem.contains("CONJ") || elem.contains("PREP")
+                    || elem.contains("PART") || elem.contains("INT") || elem.contains("ARTICLE")){
                 return true;
             }
         }
